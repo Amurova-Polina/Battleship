@@ -46,22 +46,22 @@ public class Fields {
         int[][] intCoordinates = new int[coordinates.length][2];
 
         try {
-        for (int i = 0; i < coordinates.length; i++) {
-            String[] point = coordinates[i].split(",");
+            for (int i = 0; i < coordinates.length; i++) {
+                String[] point = coordinates[i].split(",");
 //            for (String p : point) {
 //                System.out.println(p);
 //            }
-            int x = Integer.parseInt(point[0].trim());
-            int y = Integer.parseInt(point[1].trim());
-            intCoordinates[i][0] = x;
-            intCoordinates[i][1] = y;
+                int x = Integer.parseInt(point[0].trim());
+                int y = Integer.parseInt(point[1].trim());
+                intCoordinates[i][0] = x;
+                intCoordinates[i][1] = y;
 //            for (int k = 0; k < intCoordinates.length; k++) {
 //                for (int j = 0; j < intCoordinates[k].length; j++) {
 //                    System.out.print(intCoordinates[k][j] + " ");
 //                }
 //                System.out.println();
 //            }
-        }
+            }
         } catch (NumberFormatException e) {
             System.out.println("Вы ошиблись, повторите попытку");
             getCoords();
@@ -136,9 +136,9 @@ public class Fields {
     }
 
     // Выводим поле в консоль
-    public void displayField() {
+    public static void displayField(char [][] field) {
         System.out.println("Ваша флотилия:");
-        for (char[] row : playerField) {
+        for (char[] row : field) {
             for (char cell : row) {
                 String symbol = switch (cell) {
                     case '1' -> "\uD83D\uDEA4";  // Корабль
@@ -205,8 +205,29 @@ public class Fields {
                 }
             }
         }
-        displayField();
+        displayField(playerField);
         return playerField;
     }
 
+    public static void clearConsole() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Нажмите дважды Enter, чтобы очистить лог терминала...");
+
+        String previousInput = "";
+        while (true) {
+            String input = scanner.nextLine();
+            if (input.isEmpty() && previousInput.isEmpty()) {
+                printLineBreaks();
+                break;
+            }
+            previousInput = input;
+        }
+
+    }
+
+    public static void printLineBreaks() {
+        for (int i = 0; i < 50; i++) {
+            System.out.println();
+        }
+    }
 }

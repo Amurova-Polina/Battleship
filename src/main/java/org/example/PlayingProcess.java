@@ -3,19 +3,38 @@ package org.example;
 import java.util.Random;
 import java.util.Scanner;
 
-public class PlayingProcess {
+public class PlayingProcess extends Fields{
 
-    private boolean isPlayer1Turn;
+     static boolean isPlayer1Turn;
 
     // Выясняем, кто ходит первым
-    public void setTurn() {
-        isPlayer1Turn = new Random().nextBoolean();
-        System.out.println("Игра началась! Первый ход делает " + (isPlayer1Turn ? "Игрок 1" : "Игрок 2"));
+//    public void setTurn() {
+//        isPlayer1Turn = new Random().nextBoolean();
+//        System.out.println("Игра началась! Первый ход делает " + (isPlayer1Turn ? "Игрок 1" : "Игрок 2"));
+//    }
+
+    // Возвращает 1 если первым ходит Игрок 1 и 2 если первый Игрок 2
+    public static int setTurn() {
+        int turn;
+        int firstPlayer = (int) (Math.random() * 2) + 1;
+        boolean isPlayer1Turn = (firstPlayer == 1);
+        if(isPlayer1Turn){
+            turn = 1;
+        }else {turn=2;}
+        System.out.println("Игра началась! Первый ход делает Игрок " + firstPlayer);
+        return turn;
     }
 
     // Смена очереди
-    private void switchTurn() {
-        isPlayer1Turn = !isPlayer1Turn;
+     static void switchTurn(int turn) {
+        if(turn==1) {
+            turn = 2;
+            System.out.println("Ходит игрок " + turn);
+        } else {
+            turn =1;
+            System.out.println("Ходит игрок " + turn);
+        }
+
     }
 
     // Парсим координаты для удара в массив интов. Переписать!!!!!!
@@ -45,12 +64,12 @@ public class PlayingProcess {
     }
 
     // Проверяем, что координаты в границах поля. Репитативный метод!!!!!!!!!
-    private boolean isInBounds(int x, int y) {
+    private static boolean isInBounds(int x, int y) {
         return x >= 0 && x < 10 && y >= 0 && y < 10;
     }
 
     // Делаем выстрелы, пока не промахнемся
-    public char[][] strike(char[][] playerField) {
+    public static char[][] strike(char[][] playerField, char [][] playerBattleField, int turn) {
         boolean hit = false; // t если попал, f если мимо
 
         do {
@@ -68,6 +87,9 @@ public class PlayingProcess {
                             case '1': // Попадание
                                 System.out.println("Попадание!");
                                 playerField[xShot][yShot] = '3'; // Добавить запись в playerButtleField
+                                playerBattleField [xShot][yShot] = '4';
+                                displayField(playerField);
+                                displayField(playerBattleField);
                                 hit = true;
                                 break;
 
@@ -75,12 +97,17 @@ public class PlayingProcess {
                             case '2': // Мимо
                                 System.out.println("Мимо!");
                                 playerField[xShot][yShot] = '4'; // Добавить запись в playerButtleField
-                                switchTurn();
+                                playerBattleField [xShot][yShot] = '4';
+                                displayField(playerField);
+                                displayField(playerBattleField);
+                                switchTurn(turn);
                                 hit = false;
                                 break;
 
                             default:
                                 System.out.println("Произошла непредвиденная ошибка. Попробуйте ещё раз!");
+                                displayField(playerField);
+                                displayField(playerBattleField);
                                 hit = true;
                                 break;
                         }
