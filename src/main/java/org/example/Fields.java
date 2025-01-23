@@ -2,18 +2,26 @@ package org.example;
 
 import lombok.Getter;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Scanner;
 
 import static org.example.Players.printCharsDescription;
 
-@Getter
 public class Fields {
 
-    // Игровое поле
-    private char[][] playerField;
-
-    //мапа, хранит количество кораблей разного типа: ключ - кол-во палуб, значение - кол-во кораблей
+    // Словарь хранит количество кораблей разного типа: ключ - кол-во палуб, значение - кол-во кораблей
     private final Map<Integer, Integer> shipsAmount = new LinkedHashMap<>();
+    // Игровое поле
+    @Getter
+    private final char[][] playerField;
+
+    {
+        shipsAmount.put(4, 1);
+        shipsAmount.put(3, 2);
+        shipsAmount.put(2, 3);
+        shipsAmount.put(1, 4);
+    }
 
     public Fields() {
         playerField = new char[10][10];
@@ -24,23 +32,54 @@ public class Fields {
         }
     }
 
-    {
-        shipsAmount.put(4, 1);
-        shipsAmount.put(3, 2);
-        shipsAmount.put(2, 3);
-        shipsAmount.put(1, 4);
+    // Выводим поле в консоль
+    public static void displayField(char[][] field) {
+        for (char[] row : field) {
+            for (char cell : row) {
+                String symbol = switch (cell) {
+                    case '1' -> "\uD83D\uDEA4";  // Корабль
+                    case '2' -> "\uD83D\uDFE6";  // Ореол
+                    case '3' -> "\uD83D\uDCA5";  // Попадание
+                    case '4' -> "\uD83D\uDD18";  // Промах
+                    default -> "\uD83D\uDD32";   // Пустая клетка
+                };
+                System.out.print(symbol);
+            }
+            System.out.println();
+        }
     }
 
-    // Считываем координаты в массив стрингов
-    public String[] getCoords() {
+    public static void clearConsole() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Нажмите Enter, чтобы соперник не увидел ваши корабли");
+
+        String previousInput = "";
+        while (true) {
+            String input = scanner.nextLine();
+            if (input.isEmpty() && previousInput.isEmpty()) {
+                printLineBreaks();
+                break;
+            }
+            previousInput = input;
+        }
+
+    }
+
+    public static void printLineBreaks() {
+        for (int i = 0; i < 25; i++) {
+            System.out.println();
+        }
+    }
+
+    // Считываем координаты в массив строк
+    public String[] getCoordinates() {
         Scanner scanner = new Scanner(System.in);
         String input = scanner.nextLine();
-        String[] coordinates = input.split(";");
-        return coordinates;
+        return input.split(";");
     }
 
-    //Преобразуем координаты в массив интов
-    public int[][] getCoordsAsIntArray(String[] coordinates) {
+    // Преобразуем координаты в массив чисел
+    public int[][] getCoordinatesAsIntArray(String[] coordinates) {
         int[][] intCoordinates = new int[coordinates.length][2];
 
         try {
@@ -51,14 +90,14 @@ public class Fields {
                 intCoordinates[i][0] = x;
                 intCoordinates[i][1] = y;
             }
-        } catch (NumberFormatException e) {
-            System.out.println("Вы ошиблись, повторите попытку");
-            getCoords();
+        } catch (RuntimeException e) {
+            System.out.println("Вы ввели некорректные координаты. Пожалуйста, сверьтесь с форматом и повторите попытку.");
+            getCoordinates();
         }
         return intCoordinates;
     }
 
-    //Возвращает true если корабль горизонтальный
+    // Возвращает true, если корабль горизонтальный
     public boolean isHorizontal(int[][] intCoordinates) {
         int count = 0;
         for (int i = 0; i < intCoordinates.length; i++) {
@@ -124,40 +163,17 @@ public class Fields {
         }
     }
 
-    // Выводим поле в консоль
-    public static void displayField(char [][] field) {
-        for (char[] row : field) {
-            for (char cell : row) {
-                String symbol = switch (cell) {
-                    case '1' -> "\uD83D\uDEA4";  // Корабль
-                    case '2' -> "\uD83D\uDFE6";  // Ореол
-                    case '3' -> "\uD83D\uDCA5";  // Попадание
-                    case '4' -> "\uD83D\uDD18";  // Промах
-                    default -> "\uD83D\uDD32";   // Пустая клетка
-                };
-                System.out.print(symbol);
-            }
-            System.out.println();
-        }
-    }
-
-    // цикл выводит сообщения для ввода координат корабля с разным количеством палуб нужное количество раз
-    public char[][] fillPlayerField(char[][] playerField) {
-
+    // Цикл выводит сообщения для ввода координат корабля с разным количеством палуб нужное количество раз
+    public void fillPlayerField(char[][] playerField) {
         for (int decks = 4; decks >= 1; decks--) {
-            int shipsCount = shipsAmount.get(decks);  // Получаем кол-во кораблей с указанным количеством палуб из мапы
+            int shipsCount = shipsAmount.get(decks);  // Получаем кол-во кораблей с указанным количеством палуб из словаря
             for (int shipIndex = 0; shipIndex < shipsCount; shipIndex++) {
                 boolean isShipPlaced = false;
                 while (!isShipPlaced) {
                     System.out.println("Введи координаты корабля с " + decks + " палубами (формат: x1,y1;x2,y2;...):");
 
                     // Получаем координаты
-                    String[] coordinates = getCoords();
-
-                    //Дописать!!!!!!!!!!!!
-//                    if(!isInBounds()){
-//
-//                    }
+                    String[] coordinates = getCoordinates();
 
                     // Проверяем количество палуб
                     if (coordinates.length != decks) {
@@ -166,7 +182,7 @@ public class Fields {
                     }
 
                     // Проверяем, что координаты последовательны
-                    int[][] intCoordinates = getCoordsAsIntArray(coordinates);
+                    int[][] intCoordinates = getCoordinatesAsIntArray(coordinates);
                     if (!isSequential(intCoordinates)) {
                         System.out.println("Ошибка: Координаты должны идти последовательно либо не соблюден формат. Попробуйте снова.");
                         continue;
@@ -174,9 +190,9 @@ public class Fields {
 
                     // Проверяем, что корабли не пересекаются и не касаются друг друга
                     boolean isValidPlacement = true;
-                    for (int[] coord : intCoordinates) {
-                        int x = coord[0];
-                        int y = coord[1];
+                    for (int[] coordinate : intCoordinates) {
+                        int x = coordinate[0];
+                        int y = coordinate[1];
                         if (!isInBounds(x, y) || playerField[x][y] != '0') {
                             isValidPlacement = false;
                             break;
@@ -197,28 +213,5 @@ public class Fields {
         displayField(playerField);
         printCharsDescription();
         clearConsole();
-        return playerField;
-    }
-
-    public static void clearConsole() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Нажмите Enter, чтобы соперник не увидел ваши корабли");
-
-        String previousInput = "";
-        while (true) {
-            String input = scanner.nextLine();
-            if (input.isEmpty() && previousInput.isEmpty()) {
-                printLineBreaks();
-                break;
-            }
-            previousInput = input;
-        }
-
-    }
-
-    public static void printLineBreaks() {
-        for (int i = 0; i < 25; i++) {
-            System.out.println();
-        }
     }
 }

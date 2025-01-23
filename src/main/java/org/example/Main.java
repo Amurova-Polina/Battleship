@@ -4,9 +4,7 @@ import static org.example.Players.printHelloMessage;
 import static org.example.PlayingProcess.*;
 
 public class Main {
-
     public static void main(String[] args) {
-
         Fields player1Field = new Fields();
         Fields player2Field = new Fields();
         Fields player1BattleField = new Fields();
@@ -15,35 +13,34 @@ public class Main {
         printHelloMessage();
         player1Field.fillPlayerField(player1Field.getPlayerField());
 
-
         printHelloMessage();
         player1Field.fillPlayerField(player2Field.getPlayerField());
-        int turn = setTurn();
 
-        boolean b = true;
-        while (b) {
-            System.out.println("Ход делает игрок " + turn);
+        System.out.println("Игра началась!");
+
+        boolean isPlayer1Turn = isPlayer1Turn();
+        while (true) {
+            System.out.printf("\n\nХод делает игрок %s%n", isPlayer1Turn ? "1" : "2");
+
             // Подаем в strike нужный набор игровых полей в зависимости от того, чья очередь стрелять
-            if (turn == 1) {
-                strike(player2Field.getPlayerField(), player1BattleField.getPlayerField(), turn);
-            } else {
-                strike(player1Field.getPlayerField(), player2BattleField.getPlayerField(), turn);
-            }
+            if (isPlayer1Turn)
+                strike(player2Field.getPlayerField(), player1BattleField.getPlayerField());
+            else
+                strike(player1Field.getPlayerField(), player2BattleField.getPlayerField());
 
             // Проверяем, остались ли корабли хотя бы у одного из игроков
-            b = isGameContinue(player1Field.getPlayerField()) && isGameContinue(player2Field.getPlayerField());
+            boolean hasShipsPlayer1 = hasShips(player1Field.getPlayerField());
+            boolean hasShipsPlayer2 = hasShips(player2Field.getPlayerField());
 
             // Если хотя бы у одного из игроков не осталось кораблей, завершаем игру
-            if (!b) {
+            if (!hasShipsPlayer1 || !hasShipsPlayer2) {
                 System.out.println("Игра завершена.");
+                System.out.println(hasShipsPlayer1 ? "Игрок 1 победил!" : "Игрок 2 победил!");
                 break;
             } else {
                 // Меняем очередь и продолжаем игру
-                int t = switchTurn(turn);
-                turn = t;
+                isPlayer1Turn = !isPlayer1Turn;
             }
         }
-
     }
-
 }
