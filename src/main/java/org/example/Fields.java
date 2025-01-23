@@ -4,6 +4,8 @@ import lombok.Getter;
 
 import java.util.*;
 
+import static org.example.Players.printCharsDescription;
+
 @Getter
 public class Fields {
 
@@ -33,11 +35,7 @@ public class Fields {
     public String[] getCoords() {
         Scanner scanner = new Scanner(System.in);
         String input = scanner.nextLine();
-        // Разделяем строки по символу ';' (каждый набор координат)
         String[] coordinates = input.split(";");
-        //        for (String coordinate : coordinates) {
-        //            System.out.println(coordinate);
-        //        }
         return coordinates;
     }
 
@@ -48,19 +46,10 @@ public class Fields {
         try {
             for (int i = 0; i < coordinates.length; i++) {
                 String[] point = coordinates[i].split(",");
-//            for (String p : point) {
-//                System.out.println(p);
-//            }
                 int x = Integer.parseInt(point[0].trim());
                 int y = Integer.parseInt(point[1].trim());
                 intCoordinates[i][0] = x;
                 intCoordinates[i][1] = y;
-//            for (int k = 0; k < intCoordinates.length; k++) {
-//                for (int j = 0; j < intCoordinates[k].length; j++) {
-//                    System.out.print(intCoordinates[k][j] + " ");
-//                }
-//                System.out.println();
-//            }
             }
         } catch (NumberFormatException e) {
             System.out.println("Вы ошиблись, повторите попытку");
@@ -137,7 +126,6 @@ public class Fields {
 
     // Выводим поле в консоль
     public static void displayField(char [][] field) {
-        System.out.println("Ваша флотилия:");
         for (char[] row : field) {
             for (char cell : row) {
                 String symbol = switch (cell) {
@@ -173,14 +161,14 @@ public class Fields {
 
                     // Проверяем количество палуб
                     if (coordinates.length != decks) {
-                        System.out.println("Ошибка: Неверное количество координат. Попробуйте снова.");
+                        System.out.println("Ошибка: Неверное количество или формат координат. Попробуйте снова.");
                         continue;
                     }
 
                     // Проверяем, что координаты последовательны
                     int[][] intCoordinates = getCoordsAsIntArray(coordinates);
                     if (!isSequential(intCoordinates)) {
-                        System.out.println("Ошибка: Координаты должны идти последовательно. Попробуйте снова.");
+                        System.out.println("Ошибка: Координаты должны идти последовательно либо не соблюден формат. Попробуйте снова.");
                         continue;
                     }
 
@@ -195,7 +183,7 @@ public class Fields {
                         }
                     }
                     if (!isValidPlacement) {
-                        System.out.println("Ошибка: Корабль пересекается с другим кораблем или касается его ореола. Попробуйте снова.");
+                        System.out.println("Ошибка: Корабль пересекается или касается другого корабля. Попробуйте снова.");
                         continue;
                     }
 
@@ -205,13 +193,16 @@ public class Fields {
                 }
             }
         }
+        System.out.println("Ваша флотилия:");
         displayField(playerField);
+        printCharsDescription();
+        clearConsole();
         return playerField;
     }
 
     public static void clearConsole() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Нажмите дважды Enter, чтобы очистить лог терминала...");
+        System.out.println("Нажмите Enter, чтобы соперник не увидел ваши корабли");
 
         String previousInput = "";
         while (true) {
@@ -226,7 +217,7 @@ public class Fields {
     }
 
     public static void printLineBreaks() {
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 25; i++) {
             System.out.println();
         }
     }

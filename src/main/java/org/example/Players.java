@@ -14,7 +14,7 @@ public class Players {
         System.out.println("Введите свое имя");
         Scanner scanner = new Scanner(System.in);
         String playerName = scanner.nextLine();
-        System.out.println(playerName +", время расставить свою флотилию по боевым точкам!\n" +
+        System.out.println(playerName +",время расставить свою флотилию по боевым точкам!\n" +
                 "Правила заполнения игрового поля:\n" +
                 "1. Помните, что корабли должны располагаться строго вертикально или строго горизонтально, без разрывов\n" +
                 "2. Игровое поле ограничено координатами от 0 до 9\n" +
